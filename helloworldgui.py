@@ -386,3 +386,151 @@ import docker
 client = docker.from_env()
 client.containers.run("rinaibrhm/spritz")
 #docker run --rm -t -i -v """C:\Users\antho\Documents\Programs\Spritz2\GUI\bin\Debug\output:/app/data""" rinaibrhm/spritz
+
+#%% Drag and drop text into user entry
+import sys
+from PyQt5 import QtCore, QtWidgets
+from PyQt5.QtWidgets import (QMainWindow, QLabel, QGridLayout, QWidget, # window
+                             QPushButton, # button
+                             QMessageBox,
+                             QAction, QLineEdit,
+                             QApplication, QCheckBox, QGroupBox, # groupbox stuff
+                             QMenu, QRadioButton, QVBoxLayout)
+from PyQt5.QtCore import Qt, QSize
+from PyQt5.QtGui import QIcon
+
+class MainWindow(QMainWindow):
+    def __init__(self):
+        QMainWindow.__init__(self)
+
+        self.setMinimumSize(QSize(320, 140))    
+        self.setWindowTitle("PyQt Line Edit example (textfield) - pythonprogramminglanguage.com") 
+
+        self.nameLabel = CustomLabel(self)
+        self.nameLabel.setText('Name:')
+        self.line = QLineEdit(self)
+
+        self.line.move(80, 20)
+        self.line.resize(200, 32)
+        self.nameLabel.move(20, 20)
+
+        pybutton = QPushButton('OK', self)
+        pybutton.clicked.connect(self.clickMethod)
+        pybutton.resize(200,32)
+        pybutton.move(80, 60)        
+
+    def clickMethod(self):
+        print('Your name: ' + self.line.text())
+
+class CustomLabel(QLabel):
+    def __init__(self, title):
+        super().__init__(title)
+        self.setAcceptDrops(True)
+
+    def dragEnterEvent(self, e):
+        if e.mimeData().hasFormat('text/plain'):# 'text/plain' only plain text. "text/html" only html strings, not files.
+            e.accept()
+        else: 
+            e.ignore()
+    
+    def dropEvent(self, e):
+        self.setText(e.mimeData().text())
+        
+if __name__ == "__main__":
+    app = QtWidgets.QApplication(sys.argv)
+    mainWin = MainWindow()
+    mainWin.show()
+    sys.exit( app.exec_() )
+    
+#%% Drag and drop files
+import sys
+from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget, QAction, QTableWidget,QTableWidgetItem,QVBoxLayout
+from PyQt5.QtGui import QIcon
+from PyQt5.QtCore import pyqtSlot
+
+class MainWindow(QMainWindow):
+	def __init__(self, parent=None):
+		super(MainWindow, self).__init__(parent)
+		self.setWindowTitle("FiFiFactory App")
+		self.resize(720,480)
+		self.setAcceptDrops(True)
+
+	def dragEnterEvent(self, event):
+		if event.mimeData().hasUrls():
+			event.accept()
+		else:
+			event.ignore()
+
+	def dropEvent(self, event):
+		files = [u.toLocalFile() for u in event.mimeData().urls()]
+		for f in files:
+			print(f)
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    mainWin = MainWindow()
+    mainWin.show()
+    sys.exit( app.exec_() )
+    
+#%% Table
+import sys
+from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget, QAction, QTableWidget,QTableWidgetItem,QVBoxLayout
+from PyQt5.QtGui import QIcon
+from PyQt5.QtCore import pyqtSlot
+
+class App(QWidget):
+
+    def __init__(self):
+        super().__init__()
+        self.title = 'PyQt5 table - pythonspot.com'
+        self.left = 300
+        self.top = 300
+        self.width = 300
+        self.height = 200
+        self.initUI()
+        
+    def initUI(self):
+        self.setWindowTitle(self.title)
+        self.setGeometry(self.left, self.top, self.width, self.height)
+        
+        self.createTable()
+
+        # Add box layout, add table to box layout and add box layout to widget
+        self.layout = QVBoxLayout()
+        self.layout.addWidget(self.tableWidget) 
+        self.setLayout(self.layout) 
+
+        # Show widget
+        self.show()
+
+    def createTable(self):
+       # Create table
+        self.tableWidget = QTableWidget()
+        self.tableWidget.setRowCount(4)
+        self.tableWidget.setColumnCount(2)
+        self.tableWidget.setItem(0,0, QTableWidgetItem("Cell (1,1)"))
+        self.tableWidget.setItem(0,1, QTableWidgetItem("Cell (1,2)"))
+        self.tableWidget.setItem(1,0, QTableWidgetItem("Cell (2,1)"))
+        self.tableWidget.setItem(1,1, QTableWidgetItem("Cell (2,2)"))
+        self.tableWidget.setItem(2,0, QTableWidgetItem("Cell (3,1)"))
+        self.tableWidget.setItem(2,1, QTableWidgetItem("Cell (3,2)"))
+        self.tableWidget.setItem(3,0, QTableWidgetItem("Cell (4,1)"))
+        self.tableWidget.setItem(3,1, QTableWidgetItem("Cell (4,2)"))
+        self.tableWidget.move(0,0)
+
+        # table selection change
+        self.tableWidget.doubleClicked.connect(self.on_click)
+
+    @pyqtSlot()
+    def on_click(self):
+        print("\n")
+        for currentQTableWidgetItem in self.tableWidget.selectedItems():
+            print(currentQTableWidgetItem.row(), currentQTableWidgetItem.column(), currentQTableWidgetItem.text())
+ 
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    ex = App()
+    sys.exit(app.exec_())  
+    
+#%%
+    
